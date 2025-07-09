@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace Tejas.Snap
@@ -7,8 +6,12 @@ namespace Tejas.Snap
     {
         [SerializeField] private bool enableBillboard = true;
         [SerializeField] private float rotationalDegreesBuffer = 24;
+        [SerializeField] private bool enableEasing = false;
+        [SerializeField] private float easingSmoothing = 5F;
+        [SerializeField] private float rotationalStep;
 
         private Camera _mainCam;
+        private Quaternion _destinationRotation;
 
         private void Awake()
         {
@@ -26,12 +29,18 @@ namespace Tejas.Snap
         private void LookAtCameraOnYAxis()
         {
             var targetDirection = _mainCam.transform.position - transform.position;
-
+            var step = rotationalStep * Time.deltaTime;
+            
             if (Vector3.Angle(transform.forward, targetDirection) > rotationalDegreesBuffer)
             {
-                var rotation = Quaternion.LookRotation(targetDirection, Vector3.up);
-                transform.rotation = rotation;
+                _destinationRotation = Quaternion.RotateTowards(_destinationRotation, 
+                    Quaternion.LookRotation(targetDirection), step);
             }
+
+            var easedRotation = Quaternion.Lerp(transform.rotation, _destinationRotation,
+                Time.deltaTime * easingSmoothing);
+            
+            transform.rotation = enableEasing ? easedRotation : _destinationRotation;
         }
     }
 }
