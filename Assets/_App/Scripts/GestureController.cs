@@ -5,15 +5,17 @@ namespace Tejas
 {
     public class GestureController
     {
-        public event Action<OVRInput.Handedness> PinchDownCallback;
-        public event Action<OVRInput.Handedness> PinchReleaseCallback;
-        public event Action<OVRInput.Handedness> PalmUpCallback;
-        public event Action<OVRInput.Handedness> PalmDownCallback;
-        public event Action<OVRInput.Handedness> LShapeCreatedCallack;
+        public event Action<OVRHand, Vector3> PinchDownCallback;
+        public event Action<OVRHand> PinchReleaseCallback;
+        public event Action<OVRHand> PalmUpCallback;
+        public event Action<OVRHand> PalmDownCallback;
+        public event Action<OVRHand> LShapeCreatedCallack;
         
         private readonly GestureFingerProvider _fingerProvider;
         private readonly GestureFingerData _fingerData;
 
+        private OVRHand Hand => _fingerProvider.Hand;
+        
         private bool _isPinching;
         private bool _isPalmUp;
         private bool _isMakingLShape;
@@ -41,7 +43,7 @@ namespace Tejas
             {
                 if (!_isPinching)
                 {
-                    PinchDownCallback?.Invoke(OVRInput.Handedness.RightHanded);
+                    PinchDownCallback?.Invoke(Hand, indexTip.position);
                 }
                 
                 _isPinching = true;
@@ -50,7 +52,7 @@ namespace Tejas
             {
                 if (_isPinching)
                 {
-                    PinchReleaseCallback?.Invoke(OVRInput.Handedness.RightHanded);
+                    PinchReleaseCallback?.Invoke(Hand);
                 }
                 
                 _isPinching = false;
@@ -65,7 +67,7 @@ namespace Tejas
             {
                 if (!_isPalmUp)
                 {
-                    PalmUpCallback?.Invoke(OVRInput.Handedness.RightHanded);
+                    PalmUpCallback?.Invoke(_fingerProvider.Hand);
                 }
                 
                 _isPalmUp = true;
@@ -85,7 +87,7 @@ namespace Tejas
             {
                 if (!_isMakingLShape)
                 {
-                    LShapeCreatedCallack?.Invoke(OVRInput.Handedness.RightHanded);
+                    LShapeCreatedCallack?.Invoke(Hand);
                     _isMakingLShape = true;
                 }
             }

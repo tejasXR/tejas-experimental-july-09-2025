@@ -8,7 +8,10 @@ namespace Tejas
     [RequireComponent(typeof(OVRSkeleton))]
     public class GestureFingerProvider : MonoBehaviour
     {
+        [SerializeField] private OVRHand hand;
         [SerializeField] private OVRSkeleton ovrSkeleton;
+        
+        public OVRHand Hand { get; private set; }
         
         public Transform Palm { get; private set; }
         public Transform ThumbTip { get; private set; }
@@ -47,7 +50,8 @@ namespace Tejas
             {
                 Debug.Log($"Initialized bone: {bone.Id} -- {bone.Transform.name}");
             }
-            
+
+            Hand = hand;
             Palm = GetTransformFromBone(_bones, PalmName);
             ThumbTip = GetTransformFromBone(_bones, ThumbTipName);
             IndexTip = GetTransformFromBone(_bones, IndexTipName);
